@@ -1,10 +1,14 @@
 [build]
 builder = "RAILPACK"
-buildCommand = "./gradlew :app:bootJar :app:copyOtelAgent"
+buildCommand = "./gradlew :app:bootJar --no-daemon"
+watchPatterns = ["app/**", "build.gradle.kts", "settings.gradle.kts", "gradle/**"]
 
 [deploy]
-startCommand = "java -javaagent:app/build/libs/opentelemetry-javaagent.jar -jar app/build/libs/app.jar"
+startCommand = "AGENT_JAR=app/build/libs/opentelemetry-javaagent.jar; test -f $AGENT_JAR && AGENT_FLAG=\"-javaagent:$AGENT_JAR\" || AGENT_FLAG=''; java $AGENT_FLAG -Dserver.port=$PORT -Dspring.profiles.active=staging -jar app/build/libs/app-0.0.1-SNAPSHOT.jar"
 healthcheckPath = "/actuator/health"
-healthcheckTimeout = 300
+healthcheckTimeout = 120
 restartPolicyType = "ON_FAILURE"
-restartPolicyMaxRetries = 3
+restartPolicyMaxRetries = 2
+
+[variables]
+RAILWAY_DEPLOYMENT_DRAINING_SECONDS = "30"
