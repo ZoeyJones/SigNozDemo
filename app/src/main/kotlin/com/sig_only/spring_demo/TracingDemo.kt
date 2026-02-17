@@ -38,7 +38,7 @@ class TracingDemo {
                 fetchEndpoint(
                     "fetch-endpoint-a",
                     "https://httpbin.org/get?source=endpointA",
-                    2000L
+                    1000L
                 )
             }, executor)
 
