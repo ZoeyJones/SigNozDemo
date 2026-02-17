@@ -10,7 +10,9 @@ import org.springframework.http.client.JdkClientHttpRequestFactory
 import org.springframework.web.client.RestClient
 import java.net.http.HttpClient
 import java.time.Duration
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 
 @Component
 class TracingDemo {
@@ -31,28 +33,37 @@ class TracingDemo {
     fun execute(): TracingDemoResult {
         logger.info("Tracing demo started")
 
-        val resultA = fetchEndpoint(
-            "fetch-endpoint-a",
-            "https://httpbin.org/get?source=endpointA",
-            2000L
-        )
+        Executors.newVirtualThreadPerTaskExecutor().use { executor ->
+            val futureA = CompletableFuture.supplyAsync({
+                fetchEndpoint(
+                    "fetch-endpoint-a",
+                    "https://httpbin.org/get?source=endpointA",
+                    2000L
+                )
+            }, executor)
 
-        val resultB = fetchEndpoint(
-            "fetch-endpoint-b",
-            "https://jsonplaceholder.typicode.com/todos/1",
-            3000L
-        )
+            val futureB = CompletableFuture.supplyAsync({
+                fetchEndpoint(
+                    "fetch-endpoint-b",
+                    "https://jsonplaceholder.typicode.com/todos/1",
+                    3000L
+                )
+            }, executor)
 
-        val savedAt = combineAndStore(resultA, resultB)
+            val resultA = futureA.join()
+            val resultB = futureB.join()
 
-        logger.info("Tracing demo completed")
+            val savedAt = combineAndStore(resultA, resultB)
 
-        return TracingDemoResult(
-            endpointA = resultA,
-            endpointB = resultB,
-            savedAt = savedAt,
-            storedEntries = store.size,
-        )
+            logger.info("Tracing demo completed")
+
+            return TracingDemoResult(
+                endpointA = resultA,
+                endpointB = resultB,
+                savedAt = savedAt,
+                storedEntries = store.size,
+            )
+        }
     }
 
     private fun fetchEndpoint(spanName: String, url: String, delayMs: Long): String {
