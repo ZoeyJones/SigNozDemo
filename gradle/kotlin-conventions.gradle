@@ -1,0 +1,38 @@
+// Kotlin and Spring conventions applied to all subprojects
+
+subprojects {
+    apply plugin: 'org.jetbrains.kotlin.jvm'
+    apply plugin: 'org.jetbrains.kotlin.plugin.spring'
+
+    dependencies {
+        implementation platform(rootProject.libs.spring.boot.bom)
+        implementation platform(rootProject.libs.junit.bom)
+        testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
+        testImplementation rootProject.libs.junit.jupiter
+        testRuntimeOnly rootProject.libs.junit.platform.launcher
+        testRuntimeOnly('org.jetbrains.kotlin:kotlin-reflect') {
+            because 'Required for Spring\'s Kotlin support - https://docs.spring.io/spring-boot/reference/features/kotlin.html'
+        }
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
+
+    kotlin {
+        compilerOptions {
+            freeCompilerArgs.addAll(
+                // Strict null-safety for Spring's @NonNull/@Nullable annotations (JSR-305)
+                '-Xjsr305=strict',
+                // Annotations on data class constructor params apply to both param and property
+                '-Xannotation-default-target=param-property'
+            )
+        }
+    }
+
+    tasks.withType(Test) {
+        useJUnitPlatform()
+    }
+}
