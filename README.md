@@ -58,9 +58,9 @@ curl https://<your-signoz-demo-domain>.up.railway.app/tracing-demo
 
 This endpoint:
 1. Creates a parent span `GET /tracing-demo`
-2. Fires two parallel HTTP requests (`fetch-endpoint-a` at ~1.5s, `fetch-endpoint-b` at ~3s) as child spans
-3. Combines results in a `combine-and-store` span (~1s)
-4. Total trace duration: ~4-5 seconds
+2. Fires two parallel HTTP requests (`fetch-endpoint-a` at ~500ms, `fetch-endpoint-b` at ~800ms) as child spans
+3. Combines results in a `combine-and-store` span (~500ms)
+4. Total trace duration: ~1-2 seconds
 
 ## Step 4 — View the Trace in SigNoz
 
