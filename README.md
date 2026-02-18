@@ -36,36 +36,21 @@ Wait until all services show **Online** in the Railway project dashboard:
 
 ![All services online](docs/01-railway-all-services-online.png)
 
+Public networking is pre-configured in the template — **signoz** and **SigNozDemo** will each have a public domain assigned automatically. You can find them under each service's **Settings → Networking → Public Networking**.
+
 ### Handling Migration Timing
 
 Railway does not support Docker-style `depends_on`, so services may start before migrations finish. If **signoz** or **signoz-otel-collector** crash-loop on first deploy, wait for the schema migrators to complete, then redeploy the failing services.
 
-## Step 2 — Enable Public Networking on SigNoz
+## Step 2 — Verify SigNoz Is Running
 
-> **This is required.** Without public networking on the `signoz` service, you cannot access the SigNoz dashboard from your browser.
-
-1. In your Railway project, click the **signoz** service
-2. Go to the **Settings** tab
-3. Under **Networking → Public Networking**, click **Generate Domain**
-4. Railway assigns a public URL like `signoz-production-XXXX.up.railway.app`
-
-![Enable public networking](docs/02-signoz-enable-public-networking.png)
-
-Open that URL in your browser. You should see the SigNoz welcome page confirming that **Logs, Traces, and Metrics ingestion is active**:
+Open the **signoz** public domain in your browser. You should see the SigNoz welcome page confirming that **Logs, Traces, and Metrics ingestion is active**:
 
 ![SigNoz welcome page](docs/03-signoz-welcome-ingestion-active.png)
 
-## Step 3 — Enable Public Networking on SigNozDemo
+## Step 3 — Trigger a Trace
 
-> **This is also required.** The SigNozDemo app needs a public URL so you can call its `/tracing-demo` endpoint from your browser or `curl`. Without it, there is no way to trigger the trace data from outside Railway's private network.
-
-1. Click the **SigNozDemo** service in your Railway project
-2. Go to **Settings → Networking → Public Networking**
-3. Click **Generate Domain** to get a public URL like `signoz-demo-XXXX.up.railway.app`
-
-## Step 4 — Trigger a Trace
-
-Hit the demo endpoint to generate trace data:
+Hit the SigNozDemo endpoint to generate trace data:
 
 ```bash
 curl https://<your-signoz-demo-domain>.up.railway.app/tracing-demo
@@ -77,9 +62,9 @@ This endpoint:
 3. Combines results in a `combine-and-store` span (~1s)
 4. Total trace duration: ~4-5 seconds
 
-## Step 5 — View the Trace in SigNoz
+## Step 4 — View the Trace in SigNoz
 
-1. Open your SigNoz dashboard URL
+1. Open your SigNoz dashboard
 2. Navigate to **Traces → Explorer**
 3. You should see the `SigNozDemo` service with the `GET /tracing-demo` trace
 4. Click into it to see the flamegraph with all spans:
@@ -94,7 +79,7 @@ This template gives you a working SigNoz + OpenTelemetry setup on Railway. Here'
 
 ### Remove SigNozDemo After Validation
 
-The **SigNozDemo** service exists solely to validate the SigNoz stack is working end-to-end. Once you've confirmed traces flow through (Steps 4-5 above), feel free to **delete the SigNozDemo service from your Railway project** and replace it with your own production service. The SigNoz stack (collector, ClickHouse, ZooKeeper, UI) runs independently and does not depend on SigNozDemo.
+The **SigNozDemo** service exists solely to validate the SigNoz stack is working end-to-end. Once you've confirmed traces flow through (Steps 3-4 above), feel free to **delete the SigNozDemo service from your Railway project** and replace it with your own production service. The SigNoz stack (collector, ClickHouse, ZooKeeper, UI) runs independently and does not depend on SigNozDemo.
 
 ### Point Your Own App at the Collector
 
