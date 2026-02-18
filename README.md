@@ -44,13 +44,17 @@ Railway does not support Docker-style `depends_on`, so services may start before
 
 ## Step 2 — Create Your SigNoz Account
 
-Open the **signoz** public domain in your browser. On first visit, SigNoz prompts you to create an admin account:
+Find the **signoz** service's public domain — click the service, go to **Settings → Networking → Public Networking**, and copy the URL:
 
-![SigNoz create account](docs/02-signoz-create-account.png)
+![SigNoz public domain](docs/02-signoz-public-domain.png)
+
+Open that URL in your browser. On first visit, SigNoz prompts you to create an admin account:
+
+![SigNoz create account](docs/03-signoz-create-account.png)
 
 Enter an email and password, then click **Access My Workspace**. You'll land on the SigNoz welcome page — no data is flowing yet:
 
-![SigNoz welcome — no data](docs/03-signoz-welcome-no-data.png)
+![SigNoz welcome — no data](docs/04-signoz-welcome-no-data.png)
 
 ## Step 3 — Trigger a Trace
 
@@ -62,7 +66,7 @@ https://<your-signoz-demo-domain>.up.railway.app/tracing-demo
 
 You should see a JSON response with the results from both endpoints:
 
-![Tracing demo response](docs/04-tracing-demo-response.png)
+![Tracing demo response](docs/05-tracing-demo-response.png)
 
 This endpoint:
 1. Creates a parent span `GET /tracing-demo`
@@ -74,7 +78,7 @@ This endpoint:
 
 Go back to your SigNoz dashboard. The welcome page should now confirm that **Logs, Traces, and Metrics ingestion is active**:
 
-![SigNoz ingestion active](docs/05-signoz-ingestion-active.png)
+![SigNoz ingestion active](docs/06-signoz-ingestion-active.png)
 
 ## Step 5 — View the Trace Flamegraph
 
@@ -82,7 +86,7 @@ Go back to your SigNoz dashboard. The welcome page should now confirm that **Log
 2. You should see the `SigNozDemo` service with the `GET /tracing-demo` trace
 3. Click into it to see the flamegraph with all spans:
 
-![Trace flamegraph](docs/06-trace-flamegraph.png)
+![Trace flamegraph](docs/07-trace-flamegraph.png)
 
 The flamegraph shows the parent span and its three child spans with their durations, giving you a clear picture of the request lifecycle.
 
