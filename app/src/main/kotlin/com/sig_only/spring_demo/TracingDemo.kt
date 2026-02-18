@@ -38,7 +38,7 @@ class TracingDemo {
                 fetchEndpoint(
                     "fetch-endpoint-a",
                     "https://httpbin.org/get?source=endpointA",
-                    1500L
+                    500L
                 )
             }, executor)
 
@@ -46,7 +46,7 @@ class TracingDemo {
                 fetchEndpoint(
                     "fetch-endpoint-b",
                     "https://jsonplaceholder.typicode.com/todos/1",
-                    3000L
+                    800L
                 )
             }, executor)
 
@@ -108,7 +108,7 @@ class TracingDemo {
             span.makeCurrent().use {
                 logger.info("combine-and-store started")
 
-                Thread.sleep(1000L)
+                Thread.sleep(500L)
 
                 val timestamp = System.currentTimeMillis()
                 val combined = "A=${resultA.take(100)}|B=${resultB.take(100)}"
