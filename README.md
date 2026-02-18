@@ -42,19 +42,27 @@ Public networking is pre-configured in the template — **signoz** and **SigNozD
 
 Railway does not support Docker-style `depends_on`, so services may start before migrations finish. If **signoz** or **signoz-otel-collector** crash-loop on first deploy, wait for the schema migrators to complete, then redeploy the failing services.
 
-## Step 2 — Verify SigNoz Is Running
+## Step 2 — Create Your SigNoz Account
 
-Open the **signoz** public domain in your browser. You should see the SigNoz welcome page confirming that **Logs, Traces, and Metrics ingestion is active**:
+Open the **signoz** public domain in your browser. On first visit, SigNoz prompts you to create an admin account:
 
-![SigNoz welcome page](docs/03-signoz-welcome-ingestion-active.png)
+![SigNoz create account](docs/02-signoz-create-account.png)
+
+Enter an email and password, then click **Access My Workspace**. You'll land on the SigNoz welcome page — no data is flowing yet:
+
+![SigNoz welcome — no data](docs/03-signoz-welcome-no-data.png)
 
 ## Step 3 — Trigger a Trace
 
-Hit the SigNozDemo endpoint to generate trace data:
+Open the **SigNozDemo** public domain in your browser and hit the `/tracing-demo` endpoint (or use `curl`):
 
-```bash
-curl https://<your-signoz-demo-domain>.up.railway.app/tracing-demo
 ```
+https://<your-signoz-demo-domain>.up.railway.app/tracing-demo
+```
+
+You should see a JSON response with the results from both endpoints:
+
+![Tracing demo response](docs/04-tracing-demo-response.png)
 
 This endpoint:
 1. Creates a parent span `GET /tracing-demo`
@@ -62,14 +70,19 @@ This endpoint:
 3. Combines results in a `combine-and-store` span (~500ms)
 4. Total trace duration: ~1-2 seconds
 
-## Step 4 — View the Trace in SigNoz
+## Step 4 — Verify Ingestion in SigNoz
 
-1. Open your SigNoz dashboard
-2. Navigate to **Traces → Explorer**
-3. You should see the `SigNozDemo` service with the `GET /tracing-demo` trace
-4. Click into it to see the flamegraph with all spans:
+Go back to your SigNoz dashboard. The welcome page should now confirm that **Logs, Traces, and Metrics ingestion is active**:
 
-![Trace flamegraph](docs/04-trace-flamegraph-tracing-demo.png)
+![SigNoz ingestion active](docs/05-signoz-ingestion-active.png)
+
+## Step 5 — View the Trace Flamegraph
+
+1. Navigate to **Traces → Explorer**
+2. You should see the `SigNozDemo` service with the `GET /tracing-demo` trace
+3. Click into it to see the flamegraph with all spans:
+
+![Trace flamegraph](docs/06-trace-flamegraph.png)
 
 The flamegraph shows the parent span and its three child spans with their durations, giving you a clear picture of the request lifecycle.
 
@@ -79,7 +92,7 @@ This template gives you a working SigNoz + OpenTelemetry setup on Railway. Here'
 
 ### Remove SigNozDemo After Validation
 
-The **SigNozDemo** service exists solely to validate the SigNoz stack is working end-to-end. Once you've confirmed traces flow through (Steps 3-4 above), feel free to **delete the SigNozDemo service from your Railway project** and replace it with your own production service. The SigNoz stack (collector, ClickHouse, ZooKeeper, UI) runs independently and does not depend on SigNozDemo.
+The **SigNozDemo** service exists solely to validate the SigNoz stack is working end-to-end. Once you've confirmed traces flow through (Steps 3-5 above), feel free to **delete the SigNozDemo service from your Railway project** and replace it with your own production service. The SigNoz stack (collector, ClickHouse, ZooKeeper, UI) runs independently and does not depend on SigNozDemo.
 
 ### Point Your Own App at the Collector
 
